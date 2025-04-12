@@ -33,7 +33,7 @@ const Dashboard = () => {
             <div
               className="card w-75 p-4 text-center"
               style={{
-                backgroundColor: "#3a3a3a", // bluish white
+                backgroundColor: "#f0faff", // bluish white
                 fontFamily: "'Poppins', sans-serif",
               }}
             >
