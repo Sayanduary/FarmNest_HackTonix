@@ -13,7 +13,7 @@ function Layout({ children, title, description, keywords, author }) {
         <meta name="keywords" content={keywords} />
         <meta name="author" content={author} />
         <title>{title}</title>
-      </Helmet>
+      </Helmet> 
       <Header />
       <main className="flex-grow">
         <Toaster />
