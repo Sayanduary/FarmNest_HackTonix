@@ -7,12 +7,13 @@ import toast from "react-hot-toast";
 import { Checkbox, Radio } from "antd";
 import { Prices } from "../components/Prices";
 import { useCart } from "../context/Cart";
+
 function Home() {
   const [cart, setCart] = useCart();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [checked, setCheked] = useState([]);
-  const [radio, setRadio] = useState([]);
+  const [radio, setRadio] = useState(null); // Default set to null for no selection
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -95,39 +96,68 @@ function Home() {
 
   // Load more on page change
   useEffect(() => {
-    if (!checked.length && !radio.length) {
+    if (!checked.length && !radio) {
       getAllProducts();
     }
   }, [page]);
 
   // Filter watcher
   useEffect(() => {
-    if (checked.length || radio.length) filterProducts();
+    if (checked.length || radio) filterProducts();
   }, [checked, radio]);
+
+  // Handle Radio button click
+  const handleRadioChange = (e) => {
+    if (radio === e.target.value) {
+      setRadio(null); // Unselect if clicked again
+    } else {
+      setRadio(e.target.value);
+    }
+  };
 
   return (
     <Layout title={"All Products - Best Offers"}>
       <div className="row mt-3">
         {/* Filters */}
-        <div className="col-md-2">
+        <div
+          className="col-md-2 p-3"
+          style={{
+            backgroundColor: "#f5f5f5",
+            minHeight: "100vh",
+            borderRadius: "8px",
+          }}
+        >
           <h4 className="text-center">Filter By Category</h4>
-          <div className="d-flex flex-column">
+          <div className="d-flex flex-column" style={{ marginBottom: "20px" }}>
             {categories?.map((c) => (
               <Checkbox
                 key={c._id}
                 onChange={(e) => handleFilter(e.target.checked, c._id)}
+                style={{
+                  borderRadius: "50%",
+                  marginBottom: "10px",
+                  padding: "5px",
+                  color: "black",
+                  fontWeight: "500",
+                }}
+                className="custom-checkbox"
               >
                 {c.name}
               </Checkbox>
             ))}
           </div>
 
+          {/* Line separator */}
+          <hr />
+
           <h4 className="text-center mt-4">Filter By Price</h4>
           <div className="d-flex flex-column">
-            <Radio.Group onChange={(e) => setRadio(e.target.value)}>
+            <Radio.Group onChange={handleRadioChange} value={radio}>
               {Prices?.map((p) => (
                 <div key={p._id}>
-                  <Radio value={p.array}>{p.name}</Radio>
+                  <Radio value={p.array} style={{ color: "black" }}>
+                    {p.name}
+                  </Radio>
                 </div>
               ))}
             </Radio.Group>
@@ -185,7 +215,7 @@ function Home() {
 
           {/* Load More or No More Message */}
           <div className="m-2 p-3 text-center">
-            {!checked.length && !radio.length && (
+            {!checked.length && !radio && (
               <>
                 {products.length < total ? (
                   <button
@@ -205,6 +235,19 @@ function Home() {
           </div>
         </div>
       </div>
+
+      {/* Custom CSS to change the checked color */}
+      <style>
+        {`
+          .custom-checkbox .ant-checkbox-checked .ant-checkbox-inner {
+            border-color: red !important;
+            background-color: red !important;
+          }
+          .custom-checkbox .ant-checkbox-inner {
+            border-radius: 50% !important;
+          }
+        `}
+      </style>
     </Layout>
   );
 }
